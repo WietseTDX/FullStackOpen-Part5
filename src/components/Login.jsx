@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import loginManager from '../services/login'
 import logger from '../logger'
 
-const Login = ({ setUser }) => {
+const Login = ({ setUser, setNotification }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,13 +17,17 @@ const Login = ({ setUser }) => {
       setUsername('');
       setPassword('');
       setUser(response);
-      logger.info(response)
-      // Save the token in local storage or context
-      // localStorage.setItem('token', token);
-      // Redirect or update the UI as needed
+      setNotification({
+        message: "Succesfully logged in!",
+        type: 'default'
+      })
     } catch (error) {
       logger.info("Error: ", error)
-      setError('Invalid username or password');
+      setError('Invalid username or password')
+      setNotification({
+        message: 'Invalid username or password',
+        type: 'error'
+      })
     }
   };
 

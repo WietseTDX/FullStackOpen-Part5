@@ -1,8 +1,12 @@
 import React from 'react';
 
-const Logout = ({ user, logoutCallback }) => {
+const Logout = ({ user, logoutCallback, setNotification }) => {
   const handleLogoutSubmit = (event) => {
     event.preventDefault()
+    setNotification({
+      message: `${user.name} succesfully logged out`,
+      type: 'default'
+    })
     logoutCallback();
   }
 

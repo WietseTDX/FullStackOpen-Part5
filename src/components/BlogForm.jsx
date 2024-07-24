@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import blog from '../services/blogs'
 import logger from '../logger';
 
-const BlogForm = ({ user, fetchBlogs }) => {
+const BlogForm = ({ user, fetchBlogs, setNotification }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -15,7 +15,10 @@ const BlogForm = ({ user, fetchBlogs }) => {
         author,
         url,
       }, user.token);
-      // onBlogAdded(response.data); // Pass the new blog to the parent component
+      setNotification({
+        message: `A new Blog by ${author}, ${title}`,
+        type: 'default'
+      })
       setTitle('');
       setAuthor('');
       setUrl('');
@@ -23,6 +26,10 @@ const BlogForm = ({ user, fetchBlogs }) => {
       logger.info(response)
     } catch (error) {
       console.error('There was an error adding the blog!', error);
+      setNotification({
+        message: `An error occured adding the blog`,
+        type: 'error'
+      })
     }
   };
 
