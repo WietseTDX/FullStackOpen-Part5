@@ -17,4 +17,23 @@ const post = (blog, token) => {
   return request.then(response => response.data);
 }
 
-export default { getAll, post }
+const put = (updatdedBlog, id) => {
+  const request = axios.put(`${baseUrl}/${id}`, updatdedBlog)
+  return request
+    .then(response => response.data)
+    .catch(error => error)
+}
+
+const del = (id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+  const request = axios.delete(`${baseUrl}/${id}`, config)
+  return request
+    .then(response => response.data)
+    .catch(error => error)
+}
+
+export default { getAll, post, put, del }
