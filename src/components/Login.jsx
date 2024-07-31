@@ -1,33 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import loginManager from '../services/login'
 import logger from '../logger'
+import PropTypes from 'prop-types'
 
 const Login = ({ setUser, setNotification }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
       const response = await loginManager.login({
         username,
         password
-      });
-      setUsername('');
-      setPassword('');
-      setUser(response);
+      })
+      setUsername('')
+      setPassword('')
+      setUser(response)
       setNotification({
-        message: "Succesfully logged in!",
+        message: 'Succesfully logged in!',
         type: 'default'
       })
     } catch (error) {
-      logger.info("Error: ", error)
+      logger.info('Error: ', error)
       setNotification({
         message: 'Invalid username or password',
         type: 'error'
       })
     }
-  };
+  }
 
   return (
     <div>
@@ -54,7 +55,12 @@ const Login = ({ setUser, setNotification }) => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+Login.propTypes = {
+  setUser: PropTypes.func.isRequired,
+  setNotification: PropTypes.func.isRequired
+}
+
+export default Login

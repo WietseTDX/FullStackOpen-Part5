@@ -1,37 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import blog from '../services/blogs'
-import logger from '../logger';
+import PropTypes from 'prop-types'
 
 const BlogForm = ({ user, fetchBlogs, setNotification }) => {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   const handleAddBlog = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      const response = await blog.post({
+      await blog.post({
         title,
         author,
         url,
-      }, user.token);
+      }, user.token)
       setNotification({
         message: `A new Blog by ${author}, ${title}`,
         type: 'default'
       })
-      setTitle('');
-      setAuthor('');
-      setUrl('');
-      fetchBlogs();
-      logger.info(response)
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      fetchBlogs()
     } catch (error) {
-      console.error('There was an error adding the blog!', error);
+      console.error('There was an error adding the blog!', error)
       setNotification({
-        message: `An error occured adding the blog`,
+        message: 'An error occured adding the blog',
         type: 'error'
       })
     }
-  };
+  }
 
   return (
     <div>
@@ -64,7 +63,22 @@ const BlogForm = ({ user, fetchBlogs, setNotification }) => {
         <button type="submit">Add Blog</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default BlogForm;
+const userPropType = PropTypes.shape({
+  token: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired
+})
+
+BlogForm.propTypes = {
+  user: PropTypes.oneOfType([
+    userPropType,
+    PropTypes.oneOf([null])
+  ]),
+  fetchBlogs: PropTypes.func.isRequired,
+  setNotification: PropTypes.func.isRequired
+}
+
+export default BlogForm

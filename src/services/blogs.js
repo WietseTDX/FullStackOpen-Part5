@@ -11,10 +11,10 @@ const post = (blog, token) => {
     headers: {
       Authorization: `Bearer ${token}`
     }
-  };
+  }
 
-  const request = axios.post(baseUrl, blog, config);
-  return request.then(response => response.data);
+  const request = axios.post(baseUrl, blog, config)
+  return request.then(response => response.data)
 }
 
 const put = (updatdedBlog, id) => {
@@ -29,7 +29,7 @@ const del = (id, token) => {
     headers: {
       Authorization: `Bearer ${token}`
     }
-  };
+  }
   const request = axios.delete(`${baseUrl}/${id}`, config)
   return request
     .then(response => response.data)

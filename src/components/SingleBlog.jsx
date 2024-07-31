@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const SummeryBlog = ({ blog }) => (
   <div>
@@ -15,6 +16,29 @@ const ExtendedBlog = ({ blog, handleLike, handleDelete }) => (
     <button onClick={() => handleDelete(blog)}>Delete</button>
   </div>
 )
+
+const BlogPropType = PropTypes.shape({
+  title: PropTypes.string.isRequired,
+  author: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
+  likes: PropTypes.number.isRequired,
+  user: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired
+  }).isRequired,
+  id: PropTypes.string.isRequired
+})
+
+SummeryBlog.propTypes = {
+  blog: BlogPropType.isRequired
+}
+
+ExtendedBlog.propTypes = {
+  blog: BlogPropType.isRequired,
+  handleLike: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired
+}
 
 export {
   SummeryBlog,

@@ -45,6 +45,10 @@ const App = () => {
         type: 'error'
       })
     } else {
+      setNotification({
+        message: 'Liked Blog',
+        type: 'default'
+      })
       fetchBlogs()
     }
   }
@@ -59,6 +63,10 @@ const App = () => {
           type: 'error'
         })
       } else {
+        setNotification({
+          message: 'Succesfully removed blog',
+          type: 'default'
+        })
         fetchBlogs()
       }
     }
@@ -72,7 +80,7 @@ const App = () => {
     <div>
       <Logout user={user} logoutCallback={logoutCallback} setNotification={setNotification} />
       <h2>blogs</h2>
-      <Togglable buttonLabel={"New Blog"} ref={loginRef}>
+      <Togglable buttonLabel={'New Blog'} ref={loginRef}>
         <BlogFrom user={user} fetchBlogs={fetchBlogs} setNotification={setNotification} />
       </Togglable>
       <Blog blogs={blogs} handleLike={handleLike} handleDelete={handleDelete} />
@@ -81,7 +89,7 @@ const App = () => {
 
   const loggedOutContent = (
     <div>
-      <Togglable buttonLabel={"Login"} defaultState={VisibilityState.SHOW} ref={loginRef}>
+      <Togglable buttonLabel={'Login'} defaultState={VisibilityState.SHOW} ref={loginRef}>
         <Login setUser={setUser} setNotification={setNotification} />
       </Togglable>
     </div>
