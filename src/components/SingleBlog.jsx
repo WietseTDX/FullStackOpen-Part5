@@ -3,13 +3,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const SummeryBlog = ({ blog }) => (
-  <div>
+  <div className='SummeryBlog'>
     <b>Title: {blog.title}</b><br /> Author: {blog.author}
   </div>
 )
 
 const ExtendedBlog = ({ blog, handleLike, handleDelete }) => (
-  <div>
+  <div className='ExtendedBlog'>
     Url: {blog.url} <br />
     Likes: {blog.likes} <button onClick={() => handleLike(blog)} >Like</button> <br />
     User: {blog.user?.name || 'Unknown'} <br />

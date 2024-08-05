@@ -12,6 +12,7 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
+  const [newBlogAdded, setNewBlogAdded] = useState(false)
 
   const loginRef = useRef()
 
@@ -72,16 +73,39 @@ const App = () => {
     }
   }
 
+
+  const handleAddBlog = async (formData) => {
+    try {
+      await blogService.post(formData, user.token)
+      setNotification({
+        message: `A new Blog by ${formData.author}, ${formData.title}`,
+        type: 'default'
+      })
+      setNewBlogAdded(true)
+      fetchBlogs()
+    } catch (error) {
+      console.error('There was an error adding the blog!', error)
+      setNotification({
+        message: 'An error occured adding the blog',
+        type: 'error'
+      })
+    }
+  }
+
   useEffect(() => {
     fetchBlogs()
   }, [])
+
+  useEffect(() => {
+    setNewBlogAdded(false)
+  }, [blogs])
 
   const loggedInContent = (
     <div>
       <Logout user={user} logoutCallback={logoutCallback} setNotification={setNotification} />
       <h2>blogs</h2>
       <Togglable buttonLabel={'New Blog'} ref={loginRef}>
-        <BlogFrom user={user} fetchBlogs={fetchBlogs} setNotification={setNotification} />
+        <BlogFrom handleAddBlog={handleAddBlog} emptyForm={newBlogAdded} />
       </Togglable>
       <Blog blogs={blogs} handleLike={handleLike} handleDelete={handleDelete} />
     </div>

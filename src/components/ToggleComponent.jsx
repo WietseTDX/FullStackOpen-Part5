@@ -27,7 +27,7 @@ const Togglable = forwardRef(({ buttonLabel, defaultState = VisibilityState.HIDE
       <div style={hideWhenVisible}>
         <button onClick={toggleVisibility}>{buttonLabel}</button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='TogglableContent'>
         {children}
         <button onClick={toggleVisibility}>{hideButton}</button>
       </div>

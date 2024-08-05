@@ -1,47 +1,41 @@
-import React, { useState } from 'react'
-import blog from '../services/blogs'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-const BlogForm = ({ user, fetchBlogs, setNotification }) => {
+const BlogForm = ({ handleAddBlog, emptyForm = false }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const handleAddBlog = async (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
-    try {
-      await blog.post({
-        title,
-        author,
-        url,
-      }, user.token)
-      setNotification({
-        message: `A new Blog by ${author}, ${title}`,
-        type: 'default'
-      })
+    const blogData = {
+      title,
+      author,
+      url
+    }
+    handleAddBlog(blogData)
+  }
+
+  useEffect(() => {
+    if (emptyForm) {
       setTitle('')
       setAuthor('')
       setUrl('')
-      fetchBlogs()
-    } catch (error) {
-      console.error('There was an error adding the blog!', error)
-      setNotification({
-        message: 'An error occured adding the blog',
-        type: 'error'
-      })
     }
-  }
+  }, [emptyForm])
+
 
   return (
-    <div>
+    <div className='BlogForm'>
       <h2>Add a New Blog</h2>
-      <form onSubmit={handleAddBlog}>
+      <form onSubmit={addBlog}>
         <div>
           <label>Title:</label>
           <input
             type="text"
             value={title}
             onChange={(value) => setTitle(value.target.value)}
+            placeholder='Title'
           />
         </div>
         <div>
@@ -50,6 +44,7 @@ const BlogForm = ({ user, fetchBlogs, setNotification }) => {
             type="text"
             value={author}
             onChange={(value) => setAuthor(value.target.value)}
+            placeholder='Author'
           />
         </div>
         <div>
@@ -58,6 +53,7 @@ const BlogForm = ({ user, fetchBlogs, setNotification }) => {
             type="text"
             value={url}
             onChange={(value) => setUrl(value.target.value)}
+            placeholder='URL'
           />
         </div>
         <button type="submit">Add Blog</button>
@@ -66,19 +62,9 @@ const BlogForm = ({ user, fetchBlogs, setNotification }) => {
   )
 }
 
-const userPropType = PropTypes.shape({
-  token: PropTypes.string.isRequired,
-  username: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired
-})
-
 BlogForm.propTypes = {
-  user: PropTypes.oneOfType([
-    userPropType,
-    PropTypes.oneOf([null])
-  ]),
-  fetchBlogs: PropTypes.func.isRequired,
-  setNotification: PropTypes.func.isRequired
+  handleAddBlog: PropTypes.func.isRequired,
+  emptyForm: PropTypes.bool
 }
 
 export default BlogForm
