@@ -38,6 +38,7 @@ const Login = ({ setUser, setNotification }) => {
           <div>
             <label>Username:</label>
             <input
+              data-testid='Login-Username'
               type="text"
               value={username}
               onChange={(value) => setUsername(value.target.value)}
@@ -46,6 +47,7 @@ const Login = ({ setUser, setNotification }) => {
           <div>
             <label>Password:</label>
             <input
+              data-testid='Login-Password'
               type="password"
               value={password}
               onChange={(value) => setPassword(value.target.value)}

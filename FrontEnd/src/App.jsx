@@ -94,7 +94,7 @@ const App = () => {
 
   useEffect(() => {
     fetchBlogs()
-  }, [])
+  }, [user])
 
   useEffect(() => {
     setNewBlogAdded(false)
@@ -121,7 +121,7 @@ const App = () => {
 
   return (
     <div>
-      <h2>Login</h2>
+      <h1>Blog tracker</h1>
       {user === null ?
         loggedOutContent
         :
