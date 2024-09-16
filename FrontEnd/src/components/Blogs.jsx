@@ -3,17 +3,17 @@ import { SummeryBlog, ExtendedBlog } from './SingleBlog'
 import { Togglable } from './ToggleComponent'
 import PropTypes from 'prop-types'
 
-const Blogs = ({ blogs, handleLike, handleDelete }) => {
+const Blogs = ({ blogs, user, handleLike, handleDelete }) => {
   const ExtentedRef = useRef()
 
   return (
-    <div>
+    <div className='blogs-container'>
       {
         blogs.map(blog =>
-          <div key={blog.id}>
+          <div key={blog.id} data-testid={`item-${blog.id}`} className='blog-item'>
             <SummeryBlog blog={blog} />
             <Togglable buttonLabel={'Show'} hideButton={'Hide'} ref={ExtentedRef}>
-              <ExtendedBlog blog={blog} handleLike={handleLike} handleDelete={handleDelete} />
+              <ExtendedBlog blog={blog} user={user} handleLike={handleLike} handleDelete={handleDelete} />
             </Togglable>
           </div>
         )
@@ -35,8 +35,18 @@ const BlogPropType = PropTypes.shape({
   id: PropTypes.string.isRequired
 })
 
+const userPropType = PropTypes.shape({
+  username: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired
+})
+
 Blogs.propTypes = {
   blogs: PropTypes.arrayOf(BlogPropType).isRequired,
+  user: PropTypes.oneOfType([
+    userPropType,
+    PropTypes.oneOf([null])
+  ]),
   handleLike: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired
 }

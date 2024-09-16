@@ -16,6 +16,7 @@ const Login = ({ setUser, setNotification }) => {
       })
       setUsername('')
       setPassword('')
+      console.log(response.token)
       setUser(response)
       setNotification({
         message: 'Succesfully logged in!',

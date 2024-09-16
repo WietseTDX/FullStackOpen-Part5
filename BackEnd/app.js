@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("express-async-errors");
+const cookieParser = require("cookie-parser");
 const blogsRouter = require("./controllers/blog");
 const userRouter = require("./controllers/user");
 const loginRouter = require("./controllers/login");
@@ -24,13 +25,18 @@ mongoose.connect(config.MONGODB_URI)
 
 app.use(cors());
 app.use(express.static("dist"));
+app.use(cookieParser());
 app.use(express.json());
 app.use(middleware.requestLogger);
-app.use(middleware.tokenExtractor);
 
 app.use("/api/users", userRouter);
 app.use("/api/blogs", middleware.userExtractor, blogsRouter);
 app.use("/api/login", loginRouter);
+
+if (process.env.NODE_ENV === "test") {
+  const testingRouter = require("./controllers/testing");
+  app.use("/api/testing", testingRouter);
+}
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

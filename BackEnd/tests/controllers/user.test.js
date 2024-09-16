@@ -47,13 +47,7 @@ describe("when there is initially one user in db", () => {
   test("creation fails with proper statuscode and message if username already taken", async () => {
     const usersAtStart = await helper.getAllDbData();
 
-    const { username, name, password } = helper.getSingleUser();
-
-    const newUser = {
-      username,
-      name,
-      password,
-    };
+    const newUser = helper.getSingleUser();
 
     const result = await api
       .post("/api/users")

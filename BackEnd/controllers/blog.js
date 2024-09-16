@@ -9,6 +9,7 @@ blogRouter.get("/", async (request, response) => {
 
 blogRouter.post("/", async (request, response) => {
   const { title, author, url, likes } = request.body;
+  console.log(request.user);
   if (request.user === null) {
     return response.status(401).json({ error: "token invalid" });
   }
@@ -44,7 +45,7 @@ blogRouter.get("/:id", async (request, response, next) => {
 
 blogRouter.delete("/:id", async (request, response, next) => {
   const user = await User.findById((await Blog.findById(request.params.id)).user);
-  if (user.id !== request.user.id) {
+  if (user?.id !== request.user?.id) {
     return response.status(401).json({ error: "Invalid user" });
   }
 

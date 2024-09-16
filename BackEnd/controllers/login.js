@@ -24,9 +24,27 @@ loginRouter.post("/", async (request, response) => {
 
   const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60 * 60 });
 
+  response.cookie("authToken", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 1000 * 60 * 60,
+    sameSite: "Strict",
+  });
+
   response
     .status(200)
-    .send({ token, username: user.username, name: user.name });
+    .send({ username: user.username, name: user.name, id: user._id });
+});
+
+loginRouter.post("/out", async (request, response) => {
+  response.cookie("authToken", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    expires: new Date(0),
+    sameSite: "Strict",
+  });
+
+  response.status(202).end();
 });
 
 module.exports = loginRouter;

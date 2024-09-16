@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const argon2 = require("argon2");
 
 const Blog = require("../../models/blog");
@@ -40,22 +39,27 @@ const deleteTestUser = async () => {
   await User.deleteMany({});
 };
 
-const addTestUserGetToken = async () => {
-  const testUserWithHash = {
-    ...testUser,
-    passwordHash: await argon2.hash(testUser.password),
-  };
-  delete testUserWithHash.password;
+const addTestUserGetToken = async (empty=false) => {
+  try {
+    if (empty) {
+      await User.deleteMany({});
+    }
 
-  const user = new User(testUserWithHash);
-  const responseToken = (await user.save()).toJSON();
+    const testUserWithHash = {
+      ...testUser,
+      passwordHash: await argon2.hash(testUser.password),
+    };
 
-  const userForToken = {
-    username: responseToken.username,
-    id: responseToken.id,
-  };
+    delete testUserWithHash.password;
 
-  return [jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60 * 60 }), responseToken.id];
+    const user = new User(testUserWithHash);
+    const savedUser = (await user.save()).toJSON();
+
+    return [testUser, savedUser.id];
+  } catch (err) {
+    console.error("Error adding test user:", err);
+    throw err;
+  }
 };
 
 const getSingleBlog = () => {
@@ -68,7 +72,9 @@ const getAllDbData = async () => {
 };
 
 const addBlogToDb = async (body, USERID=null) => {
-  body.user = USERID;
+  if (USERID !== null) {
+    body.user = USERID;
+  }
   const blog = new Blog(body);
   return (await blog.save()).toJSON();
 };

@@ -6,14 +6,8 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-const post = (blog, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }
-
-  const request = axios.post(baseUrl, blog, config)
+const post = (blog) => {
+  const request = axios.post(baseUrl, blog)
   return request.then(response => response.data)
 }
 
@@ -24,13 +18,8 @@ const put = (updatdedBlog, id) => {
     .catch(error => error)
 }
 
-const del = (id, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }
-  const request = axios.delete(`${baseUrl}/${id}`, config)
+const del = (id) => {
+  const request = axios.delete(`${baseUrl}/${id}`)
   return request
     .then(response => response.data)
     .catch(error => error)

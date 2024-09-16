@@ -8,12 +8,12 @@ const SummeryBlog = ({ blog }) => (
   </div>
 )
 
-const ExtendedBlog = ({ blog, handleLike, handleDelete }) => (
+const ExtendedBlog = ({ blog, user, handleLike, handleDelete }) => (
   <div className='ExtendedBlog'>
     Url: {blog.url} <br />
     Likes: {blog.likes} <button onClick={() => handleLike(blog)} >Like</button> <br />
     User: {blog.user?.name || 'Unknown'} <br />
-    <button onClick={() => handleDelete(blog)}>Delete</button>
+    {user?.id === blog.user?.id && <button onClick={() => handleDelete(blog)}>Delete</button>}
   </div>
 )
 
@@ -34,8 +34,18 @@ SummeryBlog.propTypes = {
   blog: BlogPropType.isRequired
 }
 
+const userPropType = PropTypes.shape({
+  username: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired
+})
+
 ExtendedBlog.propTypes = {
   blog: BlogPropType.isRequired,
+  user: PropTypes.oneOfType([
+    userPropType,
+    PropTypes.oneOf([null])
+  ]),
   handleLike: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired
 }

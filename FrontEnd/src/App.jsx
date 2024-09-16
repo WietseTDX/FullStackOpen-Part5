@@ -56,7 +56,7 @@ const App = () => {
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Delete ${blog.title}?`)) {
-      const response = await blogService.del(blog.id, user.token)
+      const response = await blogService.del(blog.id)
       const error = response.response?.status || null
       if (error !== null) {
         setNotification({
@@ -76,7 +76,7 @@ const App = () => {
 
   const handleAddBlog = async (formData) => {
     try {
-      await blogService.post(formData, user.token)
+      await blogService.post(formData)
       setNotification({
         message: `A new Blog by ${formData.author}, ${formData.title}`,
         type: 'default'
@@ -107,7 +107,7 @@ const App = () => {
       <Togglable buttonLabel={'New Blog'} ref={loginRef}>
         <BlogFrom handleAddBlog={handleAddBlog} emptyForm={newBlogAdded} />
       </Togglable>
-      <Blog blogs={blogs} handleLike={handleLike} handleDelete={handleDelete} />
+      <Blog blogs={blogs} user={user} handleLike={handleLike} handleDelete={handleDelete} />
     </div>
   )
 

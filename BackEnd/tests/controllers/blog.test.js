@@ -6,7 +6,7 @@ const app = require("../../app");
 const Blog = require("../../models/blog");
 const helper = require("./blog.test_helper");
 
-const api = supertest(app);
+const api = supertest.agent(app);
 
 describe("GET request from database, content type json", () => {
 
@@ -29,24 +29,33 @@ describe("GET request from database, content type json", () => {
 });
 
 describe("A full blog post to API", () => {
-  let TOKEN = null;
+  let TEST_USER;
   // eslint-disable-next-line no-unused-vars
-  let USERID = null;
+  let USER_ID;
   before(async () => {
     await Blog.deleteMany({});
     await helper.deleteTestUser();
-    [TOKEN, USERID] = await helper.addTestUserGetToken();
+
+    // Set login cookie
+    [TEST_USER, USER_ID] = await helper.addTestUserGetToken(true);
+    await api.post("/api/login")
+      .send({
+        username: TEST_USER.username,
+        password: TEST_USER.password,
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect(200);
   });
 
   const payload = helper.getSingleBlog();
 
-  test("POST blog as json to database with token", async () => {
+  test("POST blog as json to database with http cookie", async () => {
     const response = await api
       .post("/api/blogs")
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .set("Authorization", `Bearer ${TOKEN}`)
       .expect(201)
       .expect("Content-Type", /application\/json/);
     const responseBody = response._body;
@@ -65,6 +74,12 @@ describe("A full blog post to API", () => {
   });
 
   test("POST blog as json to database without token", async () => {
+
+    await api.post("/api/login/out")
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect(202);
+
     const response = await api
       .post("/api/blogs")
       .send(payload)
@@ -77,13 +92,24 @@ describe("A full blog post to API", () => {
 });
 
 describe("Verify likes property default to 0 when not provided", () => {
-  let TOKEN = null;
+  let TEST_USER;
   // eslint-disable-next-line no-unused-vars
-  let USERID = null;
+  let USER_ID;
   before(async () => {
     await Blog.deleteMany({});
     await helper.deleteTestUser();
-    [TOKEN, USERID] = await helper.addTestUserGetToken();
+    [TEST_USER, USER_ID] = await helper.addTestUserGetToken(true);
+
+    // Set login cookie
+    [TEST_USER, USER_ID] = await helper.addTestUserGetToken(true);
+    await api.post("/api/login")
+      .send({
+        username: TEST_USER.username,
+        password: TEST_USER.password,
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect(200);
   });
 
   const payload = helper.getSingleBlog();
@@ -95,7 +121,6 @@ describe("Verify likes property default to 0 when not provided", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .set("Authorization", `Bearer ${TOKEN}`)
       .expect(201)
       .expect("Content-Type", /application\/json/);
     const responseBody = response._body;
@@ -114,12 +139,23 @@ describe("Verify likes property default to 0 when not provided", () => {
 });
 
 describe("POST new blogs without required fields, verify code 400 and no data added", () => {
-  let TOKEN = null;
+  let TEST_USER;
   // eslint-disable-next-line no-unused-vars
-  let USERID = null;
+  let USER_ID;
   before(async () => {
     await helper.deleteTestUser();
-    [TOKEN, USERID] = await helper.addTestUserGetToken();
+    [TEST_USER, USER_ID] = await helper.addTestUserGetToken(true);
+
+    // Set login cookie
+    [TEST_USER, USER_ID] = await helper.addTestUserGetToken(true);
+    await api.post("/api/login")
+      .send({
+        username: TEST_USER.username,
+        password: TEST_USER.password,
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect(200);
   });
 
   beforeEach(async () => {
@@ -132,7 +168,6 @@ describe("POST new blogs without required fields, verify code 400 and no data ad
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .set("Authorization", `Bearer ${TOKEN}`)
       .expect(400)
       .expect("Content-Type", /application\/json/);
 
@@ -168,18 +203,28 @@ describe("POST new blogs without required fields, verify code 400 and no data ad
 });
 
 describe("DELETE blog by id and verify its removal", async () => {
-  let TOKEN = null;
-  let USERID = null;
+  let TEST_USER;
+  let USER_ID;
   before(async () => {
     await helper.deleteTestUser();
-    [TOKEN, USERID] = await helper.addTestUserGetToken();
+
+    // Set login cookie
+    [TEST_USER, USER_ID] = await helper.addTestUserGetToken(true);
+    await api.post("/api/login")
+      .send({
+        username: TEST_USER.username,
+        password: TEST_USER.password,
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect(200);
   });
 
   let blogInDb = {};
   const payload = helper.getSingleBlog();
   beforeEach(async () => {
     await Blog.deleteMany({});
-    blogInDb = await helper.addBlogToDb(payload, USERID);
+    blogInDb = await helper.addBlogToDb(payload, USER_ID);
     blogInDb.user = blogInDb.user.toString();     // change id object to string for future comparison
     assert(Object.keys(blogInDb).length > 0, "The database write has failed this describe will fail");
   });
@@ -187,7 +232,6 @@ describe("DELETE blog by id and verify its removal", async () => {
   test("Delete a blog entry on id", async () => {
     await api
       .delete(`/api/blogs/${blogInDb.id}`)
-      .set("Authorization", `Bearer ${TOKEN}`)
       .expect(204);
 
     assert.deepStrictEqual((await helper.getAllDbData()).length, 0, "The data was not correctly deleted, there are still records in the database");
@@ -197,7 +241,6 @@ describe("DELETE blog by id and verify its removal", async () => {
     // eslint-disable-next-line no-unused-vars
     const response = await api
       .delete(`/api/blogs/${blogInDb.id.slice(0, -8)}XXXXXXXX`)
-      .set("Authorization", `Bearer ${TOKEN}`)
       .expect(400)
       .expect("Content-Type", /application\/json/);
     assert.deepStrictEqual((await helper.getAllDbData()).length, 1, "The data was deleted with a wrong id, there should be a record still in the database");
@@ -206,12 +249,30 @@ describe("DELETE blog by id and verify its removal", async () => {
 
 
 describe("PUT change single blog information", async () => {
+  let TEST_USER;
+  let USER_ID;
+  before(async () => {
+    await helper.deleteTestUser();
+
+    // Set login cookie
+    [TEST_USER, USER_ID] = await helper.addTestUserGetToken(true);
+    await api.post("/api/login")
+      .send({
+        username: TEST_USER.username,
+        password: TEST_USER.password,
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect(200);
+  });
+
+
   let blogInDb = {};
   let payload = {};
   beforeEach(async () => {
     payload = helper.getSingleBlog();
     await Blog.deleteMany({});
-    blogInDb = await helper.addBlogToDb(payload);
+    blogInDb = await helper.addBlogToDb(payload, USER_ID);
     assert(Object.keys(blogInDb).length > 0, "The database write has failed this describe will fail");
   });
 

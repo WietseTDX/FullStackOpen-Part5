@@ -23,7 +23,13 @@ describe('<Blogs />', () => {
       id: '66a10b8b1846d7e7a0c0af6a'
     }]
 
-    container = render(<Blogs blogs={blog} handleLike={mockLikeHandler} handleDelete={mockDeleteHandler} />).container
+    const user = {
+      username: 'pass',
+      name: 'Tok',
+      id: '669f9194754a68b4f6156ac8'
+    }
+
+    container = render(<Blogs blogs={blog} user={user} handleLike={mockLikeHandler} handleDelete={mockDeleteHandler} />).container
   })
 
   test('Renders summery content by default', () => {
